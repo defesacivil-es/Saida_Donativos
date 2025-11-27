@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Saída Donativos</title>
+
+  <style>
+    :root {
+      --cor-principal: #2B7A78;
+      --cor-secundaria: #DEF2F1;
+      --cor-clara: #FEFFFF;
+      --cor-escura: #17252A;
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background-color: var(--cor-secundaria);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      align-items: flex-start;
+    }
+
+    /* -- inserir no <style> já existente -- */
+    .logo {
+      width: 100%;            /* ocupa toda a largura possível */
+      /*max-width: 220px;       /* mas não passa de 220px */
+      height: auto;           /* mantém a proporção */
+      display: block;
+      margin: 0 auto 12px;    /* centraliza e dá espaço abaixo */
+    }
+    .logo-wrap {
+      text-align: center;
+      margin-bottom: 8px;  /* espaço entre imagem e título */
+    }
+
+    .container {
+      background: var(--cor-clara);
+      border-radius: 12px;
+      padding: 25px 30px;
+      margin: 30px;
+      width: 100%;
+      max-width: 950px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--cor-escura);
+      margin-bottom: 20px;
+    }
+
+    fieldset {
+      border: 2px solid var(--cor-principal);
+      border-radius: 8px;
+      margin-bottom: 18px;
+      padding: 15px 20px;
+    }
+
+    legend {
+      font-weight: bold;
+      color: var(--cor-principal);
+      padding: 0 8px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 7px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 4px;
+      box-sizing: border-box;
+    }
+
+    /* Chrome, Edge, Opera, Safari */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    button {
+      background-color: var(--cor-principal);
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      /*width: 100%;*/
+      width: auto; /* <<< largura ajusta ao conteúdo */
+      display: inline-block; /* evita que ocupe 100% do espaço */
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #205f5d;
+    }
+
+    #saveToSheetButton {
+      background-color: #D2691E; /* laranja opaco */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      width: auto; /* <<< largura ajusta ao conteúdo */
+      display: inline-block; /* evita que ocupe 100% do espaço */
+    }
+
+    #saveToSheetButton:hover {
+      background-color: #B85C1A; /* tom ligeiramente mais escuro no hover */
+    }
+
+    #limpaToSheetButton {
+      background-color: #DC143C; /* vermelho */
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      width: auto; /* <<< largura ajusta ao conteúdo */
+      display: inline-block; /* evita que ocupe 100% do espaço */
+    }
+
+    #limpaToSheetButton:hover {
+      background-color: #B22222; /* tom ligeiramente mais escuro no hover */
+    }
+
+    .botoes-container {
+      display: flex;
+      justify-content: space-between; /* um botão à esquerda e outro à direita */
+      align-items: center;
+      width: 100%; /* ocupa toda a largura disponível */
+      margin-top: 10px;
+    }
+
+    #tabelaDonativos {
+      width: 100%;  
+      max-width: 100%; 
+      box-sizing: border-box;
+      /* border-collapse: separate !important;  /* permite bordas arredondadas e força modo separado */
+      border-spacing: 0;          /* remove espaçamento entre células */
+      /*border: 2px solid #2B7A78;  /* azul petróleo */
+      /*border-radius: 14px;        /* arredonda o contorno da tabela */
+      overflow: hidden;           /* garante visual limpo */
+    }
+
+     #status {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .quantidade-container {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+    }
+
+    .unidade-label {
+     font-weight: bold;
+     color: var(--cor-escura);
+     white-space: nowrap;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      /*border: 1px solid #ccc;*/
+      border: 1px solid #2B7A78;
+      padding: 6px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    th {
+      background-color: #87CEEB; /* azul céu */
+      /*border: 2px solid #2B7A78; /* borda azul petróleo */
+      /*border-radius: 8px;        /* arredonda o contorno da tabela */
+      color: white;              /* mantém o texto branco para contraste */
+    }
+
+    .btnExcluir {
+      background-color: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    .btnExcluir:hover {
+      background-color: #922b21;
+    }
+
+    /* Reduz exatamente a altura do campo */
+    .choices {
+      width: 100% !important;       /* ocupa apenas a largura da coluna */
+      max-width: 100% !important;   /* impede que estoure para fora */
+      box-sizing: border-box !important;
+      margin-top: 4px !important;
+    }
+
+    /* Ajusta a caixa interna para a mesma altura dos outros inputs */
+    .choices__inner {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      border: 1px solid #ccc !important;
+      border-radius: 6px !important;
+      padding: 2px 7px !important;
+      min-height: 32px !important;   /* <<< ajuste principal */
+      height: 32px !important;       /* <<< força a altura */
+      display: flex;
+      align-items: center;           /* centraliza o texto */
+    }
+
+    /* Ajusta o texto interno para não aumentar a altura */
+    .choices__inner .choices__item {
+      padding: 0 !important;
+      margin: 0 !important;
+      font-size: 14px !important;
+      line-height: 1.2 !important;   /* <<< evita expansão vertical */
+    }
+
+    /* Remove espaço extra no modo single */
+    .choices__list--single {
+      padding: 0 !important;
+    }
+
+    /* Dropdown com altura normal */
+    .choices__list--dropdown {
+      border-radius: 6px !important;
+      border: 1px solid #ccc !important;
+      margin-top: 2px !important;
+    }
+
+    @media (min-width: 700px) {
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px 20px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo-wrap">
+      <img src="Z:\DEP_RESPOSTA\13 - PAINEIS DO POWER BI\Imagens\Cabeçalho CEPDEC.png" alt="Logo da CepDec" class="logo">
+    </div>
+
+    <h2>Saída de Donativos</h2>
+
+    <form id="formDonativos">
+      <fieldset>
+        <legend>Identificação da Saída</legend>
+        <div class="grid-2">
+          <label>Data de Saída <input type="date" name="dataSaida" required></label>
+          <label>Hora de Saída <input type="time" name="horaSaida" required></label>
+          <label>Local de Saída 
+            <select id="localSaidaSelect" name="localSaida" required>
+              <option value="" disabled selected>Carregando locais...</option>     
+            </select>      
+          </label>
+          <label>Município Destino 
+            <select id="municipioSelect" name="municipio" required>
+              <option value="" disabled selected>Carregando municípios...</option>     
+            </select>      
+          </label>
+          <label>Nome do Operador <input type="text" name="nomeOperador" required style="text-transform: uppercase;"></label>
+          <label>Número Funcional <input type="number" name="numeroFuncional" required></label>
+          <label>Caminhão Transportador<input type="text" name="codigoCaminhao" required style="text-transform: uppercase;"></label>
+      
+          <label>Tipo de Doador 
+            <select id="tipoDoadorSelect" name="tipoDoador" >
+              <option value="" disabled selected>Carregando tipos...</option>
+            </select>
+          </label>
+          <label>Nome de Doador <input type="text" name="nomeDoador" style="text-transform: uppercase;"></label>      
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Características dos Donativos</legend>
+        <div class="grid-2">
+          <label>Tipo de Donativo
+            <select name="tipoDonativo" id="tipoDonativoSelect" required>
+              <option value="" disabled selected>Carregando tipos...</option>
+            </select>
+          </label>
+          <label>Classe Donativo
+            <input type="text" name="classeDonativo" id="classeDonativoInput" readonly placeholder="Preenchido automaticamente">
+          </label>
+          <label>Unidade
+            <input type="text" name="unidade" id="unidadeInput" readonly placeholder="Preenchido automaticamente">
+          </label>
+          <label>Descrição de Donativo <input type="text" name="descricaoDonativo"></label>
+          <label>Descrição da Embalagem <input type="text" name="descricaoEmbalagem"></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Quantidades</legend>
+        <div class="grid-2">
+          <label>
+          <div class="quantidade-container">
+            <input type="number" name="quantidade" step="any" min="0.001" required style="width: 120px;">
+            <span id="unidadeDisplay" class="unidade-label"></span>
+          </div>
+          </label>
+        </div>
+      </fieldset>
+
+    <div class="botoes-container">
+      <button type="button" id="addToTableButton">Adicionar Itens à Lista de Donativos</button>
+      <button type="button" id="saveToSheetButton" disabled>Enviar Lista de Donativos</button>
+      <button type="button" id="limpaToSheetButton" onclick="limparFormularioEBuscas()">Limpa o Formulário</button>     
+    </div>
+
+      <div id="status" class="message"></div>
+    </form>
+
+
+    <table id="tabelaDonativos" style="margin-top:20px; display:none;">
+      <thead>
+        <tr>
+          <th>Quantidade</th>
+          <th>Unidade</th>
+          <th>Tipo Donativo</th>
+          <th>Descrição Donativo</th>
+          <th>Embalagem</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  </div>
+
+<script>
+  const appScriptUrl = 'https://script.google.com/macros/s/AKfycbw_Jnd8nTblNqdCqSSVIKZAVh1hJt5g5WWPtMJxofYI-P8ks8OvHGnbntTdNAGBdyWR/exec';
+  let lookupData = {};
+  let registrosPendentes = [];
+
+  const form = document.getElementById('formDonativos');
+  const tabela = document.getElementById('tabelaDonativos');
+  const tbody = tabela.querySelector('tbody');
+  const addBtn = document.getElementById('addToTableButton');
+  const saveBtn = document.getElementById('saveToSheetButton');
+  const statusArea = document.getElementById('status');
+
+  async function fetchLookupData() {
+    const lookupUrl = `${appScriptUrl}?action=lookup`;
+    try {
+      const res = await fetch(lookupUrl);
+      const json = await res.json();
+      const data = json.data || json;
+      lookupData = data;
+      populateDonativeTypes(lookupData.tiposDonativo || []);
+      populateSelect(document.getElementById('tipoDoadorSelect'), lookupData.tiposDoador || []);
+      populateSelect(document.getElementById('localSaidaSelect'), lookupData.localSaida || []);
+      populateSelect(document.getElementById('municipioSelect'), lookupData.municipio || []);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function populateSelect(select, items){
+    select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+    items.forEach(i=>{
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = i;
+      select.appendChild(opt);
+    });
+  }
+
+  function populateDonativeTypes(donativoData){
+    const tipoSelect = document.getElementById('tipoDonativoSelect');
+    tipoSelect.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+    const tipos = donativoData.listaOriginal || Object.keys(donativoData);
+    tipos.forEach(tipo=>{
+      const opt = document.createElement('option');
+      opt.value = tipo;
+      opt.textContent = tipo; // mantém exatamente como está na planilha
+      tipoSelect.appendChild(opt);
+    });
+
+  }
+
+  document.getElementById('tipoDonativoSelect').addEventListener('change', e=>{
+    const info = lookupData.tiposDonativo ? lookupData.tiposDonativo[e.target.value] : null;
+    document.getElementById('classeDonativoInput').value = info ? info.classe : '';
+    document.getElementById('unidadeInput').value = info ? info.unidade : '';
+    const tipoSelecionado = e.target.value;
+      if (tipoSelecionado && info) {
+        document.getElementById('unidadeDisplay').innerHTML = info ? `<span style="color: #FF0000;">OBS: Quantidade em ${info.unidade}.</span>` : '';
+    } else {
+      document.getElementById('unidadeDisplay').innerHTML = '';
+    }
+  });
+
+  // adicionar à tabela
+  addBtn.addEventListener('click', ()=>{
+
+    // Verifica se o formulário está válido antes de continuar
+    if (!form.checkValidity()) {
+      form.reportValidity(); // Mostra mensagens de erro campo a campo
+      return; // Interrompe se algum obrigatório estiver faltando
+    }
+
+    const dados = Object.fromEntries(new FormData(form).entries());
+
+    // Converter para MAIÚSCULAS antes de enviar
+    dados.nomeOperador = dados.nomeOperador.toUpperCase();
+    dados.nomeDoador = dados.nomeDoador.toUpperCase();
+
+    registrosPendentes.push(dados);
+    const index = registrosPendentes.length - 1;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${dados.quantidade}</td>
+      <td>${dados.unidade}</td>
+      <td>${dados.tipoDonativo}</td>
+      <td>${dados.descricaoDonativo}</td>
+      <td>${dados.descricaoEmbalagem}</td>
+      <td style="text-align:center;">
+        <button type="button" class="btnExcluir" data-index="${index}">Excluir</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+
+    tabela.style.display = 'table';
+    saveBtn.disabled = false;
+
+    const dataVal = form.dataSaida.value;
+    const horaVal = form.horaSaida.value;
+    const localVal = form.localSaida.value;
+    const municipioVal = form.municipio.value;
+    const nomeVal = form.nomeOperador.value;
+    const nfVal = form.numeroFuncional.value;
+    const codigoVal = form.codigoCaminhao.value;
+    const tipoVal = form.tipoDoador.value;
+    const doadorVal = form.nomeDoador.value;
+    form.reset();
+    form.dataSaida.value = dataVal;
+    form.horaSaida.value = horaVal;
+    form.localSaida.value = localVal;
+    form.municipio.value = municipioVal;
+    form.nomeOperador.value = nomeVal;
+    form.numeroFuncional.value = nfVal;
+    form.codigoCaminhao.value = codigoVal;
+    form.tipoDoador.value = tipoVal;
+    form.nomeDoador.value = doadorVal;
+
+    // 🔹 Limpa o texto da observação de unidade
+    document.getElementById('unidadeDisplay').innerHTML = '';
+
+  });
+
+  // excluir linha
+  tbody.addEventListener('click', (e)=>{
+    if (e.target.classList.contains('btnExcluir')) {
+      const row = e.target.closest('tr');
+      const index = parseInt(e.target.dataset.index);
+
+      registrosPendentes.splice(index, 1);
+      row.remove();
+
+      [...tbody.querySelectorAll('.btnExcluir')].forEach((btn, i)=>{
+        btn.dataset.index = i;
+      });
+
+      if (registrosPendentes.length === 0) {
+        tabela.style.display = 'none';
+        saveBtn.disabled = true;
+      }
+    }
+  });
+
+  // salvar todos
+  saveBtn.addEventListener('click', async ()=>{
+    if (registrosPendentes.length === 0) return;
+    statusArea.textContent = "Salvando na planilha...";
+    saveBtn.disabled = true;
+
+    try {
+      // 1. Cria um objeto FormData
+      const dataToSend = new FormData();
+    
+      // 2. Adiciona a action e o array de registros JSON (como string)
+      // O Apps Script espera estes nomes em e.parameter
+      dataToSend.append('action', 'batchSave');
+      dataToSend.append('registros', JSON.stringify(registrosPendentes)); 
+
+      // 3. Envia a requisição POST
+      // O fetch define o Content-Type: multipart/form-data automaticamente
+      const response = await fetch(appScriptUrl, {
+        method: 'POST',
+        body: dataToSend // Passa o objeto FormData diretamente
+      });
+
+      const result = await response.json();
+      if (result.status === 'SUCCESS') {
+        statusArea.textContent = "✅ Todos os registros foram salvos!";
+        registrosPendentes = [];
+        tbody.innerHTML = '';
+        tabela.style.display = 'none';
+        // 🔸 Torna a mensagem temporária (desaparece após 5 segundos)
+        setTimeout(() => {
+          statusArea.textContent = '';
+        }, 3000); // tempo em milissegundos (3000 = 3 segundos)
+      } else {
+        statusArea.textContent = "⚠️ Erro ao salvar: " + result.message;
+        // 🔸 Também pode sumir após um tempo, se quiser:
+        setTimeout(() => {
+          statusArea.textContent = '';
+        }, 7000); // tempo em milissegundos (7000 = 7 segundos)
+      }
+    }
+ 
+    catch (err) {
+      statusArea.textContent = "❌ Falha de conexão/Servidor: " + err.message;
+    }
+ 
+    finally {
+      // Reabilita o botão apenas para um novo ciclo de adições, se necessário
+      if (registrosPendentes.length === 0) {
+          saveBtn.disabled = true;
+      }
+    }
+
+    const dataVal = form.dataSaida.value;
+    const localVal = form.localSaida.value;
+    const nomeVal = form.nomeOperador.value;
+    const nfVal = form.numeroFuncional.value;
+    form.reset();
+    form.dataSaida.value = dataVal;
+    form.localSaida.value = localVal;
+    form.nomeOperador.value = nomeVal;
+    form.numeroFuncional.value = nfVal;
+
+  });
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    fetchLookupData();
+    const hoje = new Date().toISOString().split('T')[0];
+    form.dataSaida.value = hoje;
+  });
+
+  function limparFormularioEBuscas() {
+      // 1. Limpa todos os campos <input>, <textarea> e <select>
+      const form = document.querySelector('form'); // Supondo que seus campos estejam dentro de uma tag <form>
+      if (form) {
+          form.reset(); // Método nativo que limpa a maioria dos campos do formulário
+          // Restaura a data de saída para HOJE
+          const hoje = new Date().toISOString().split('T')[0];
+          form.dataSaida.value = hoje;
+        
+      }
+
+      // 2. Limpa o conteúdo das tabelas (se elas contiverem dados gerados dinamicamente)
+      // Você precisa identificar o ID ou a Classe da tabela que deseja limpar.
+      const tabela = document.getElementById('tabelaDonativos');
+      if (tabela) {
+          // Encontra o <tbody> (onde estão as linhas de dados)
+          const tbody = tabela.querySelector('tbody');
+          if (tbody) {
+              tbody.innerHTML = ''; // Limpa todas as linhas dentro do <tbody>
+              tabela.style.display = 'none';
+              document.getElementById('saveToSheetButton').disabled = true;
+              registrosPendentes = [];
+          }
+      }
+    
+      // 3. (Opcional) Limpa outros elementos, como divs de resultado.
+      // Exemplo: Se você tem um div para mostrar mensagens de sucesso/erro.
+      const divMensagem = document.getElementById('mensagem');
+      if (divMensagem) {
+          divMensagem.innerHTML = '';
+      }
+      document.getElementById('status').textContent = '';
+      document.getElementById('unidadeDisplay').innerHTML = '';
+       
+      // 4. Desabilita novamente o botão se ele só deve estar ativo após algum preenchimento
+      // document.getElementById('limpaToSheetButton').disabled = true;
+
+  }
+  
+</script>
+</body>
+</html>
