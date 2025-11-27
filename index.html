@@ -270,6 +270,19 @@
       }
     }
 
+    @media print {
+      /* Ocultar botões */
+      button, .sem-imprimir {
+      display: none !important;
+      }
+
+      /* Ajustar largura da página */
+      body {
+        margin: 20px;
+        font-size: 14px;
+      }
+    }
+    
   </style>
 </head>
 
@@ -343,7 +356,7 @@
 
     <div class="botoes-container">
       <button type="button" id="addToTableButton">Adicionar à Lista</button>
-      <button type="button" id="saveToSheetButton" disabled>Enviar Lista</button>
+      <button type="button" id="saveToSheetButton" disabled>Enviar a Lista</button>
       <button type="button" id="printToSheetButton" onclick="printFormularioEBuscas()">Imprimir Formulário</button>           
       <button type="button" id="limpaToSheetButton" onclick="limparFormularioEBuscas()">Limpar Formulário</button>     
     </div>
@@ -619,50 +632,10 @@
   }
 
   function printFormularioEBuscas() {
-  const form = document.getElementById('formDonativos');
-  if (!form) {
-    alert("Formulário não encontrado. Verifique o ID.");
-    return;
+    window.print();
   }
-
-  // Captura todos os dados do formulário automaticamente
-  const dados = Object.fromEntries(new FormData(form).entries());
-
-  // Monta o HTML que será impresso
-  let conteudo = "<h2>Dados do Formulário</h2><table style='width:100%; border-collapse: collapse;'>";
-
-  for (const [campo, valor] of Object.entries(dados)) {
-    conteudo += `
-      <tr>
-        <td style='border:1px solid #000; padding:6px; font-weight:bold;'>${campo}</td>
-        <td style='border:1px solid #000; padding:6px;'>${valor}</td>
-      </tr>`;
-  }
-
-  conteudo += "</table>";
-
-  // Abre nova janela para impressão
-  const printWindow = window.open("", "_blank");
-  printWindow.document.write(`
-    <html>
-    <head>
-      <title>Impressão do Formulário</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h2 { text-align: center; }
-      </style>
-    </head>
-    <body>
-      ${conteudo}
-    </body>
-    </html>
-  `);
-
-  printWindow.document.close();
-  printWindow.print();
-}
-
   
 </script>
 </body>
 </html>
+
